@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block titulo %}Sobre o {{ produto }} | {{ slogan }}{% endblock %}
+
+{% block conteudo %}
+<div class="sobre">
+  <header class="sobre-abertura">
+    <img class="sobre-logo" src="{{ url_for('static', filename='img/logo-completa.png') }}"
+         alt="{{ produto }}: {{ slogan }}" width="758" height="207">
+    <h1>Sobre o {{ produto }}</h1>
+    <p>Um organizador de compromissos de saúde, feito para que consultas, exames e vacinas não dependam só da memória.</p>
+  </header>
+
+  <div class="sobre-corpo">
+    <nav class="sobre-indice" aria-label="Nesta página">
+      <p class="sobre-indice-titulo">Nesta página</p>
+      <ul>
+        <li><a href="#projeto">O projeto</a></li>
+        <li><a href="#como-funciona">Como funciona</a></li>
+        <li><a href="#equipe">Equipe</a></li>
+        <li><a href="#contato">Contato</a></li>
+        <li><a href="#informacoes">Informações e versão</a></li>
+      </ul>
+    </nav>
+
+    <div class="sobre-secoes">
+      <section id="projeto" aria-labelledby="t-projeto">
+        <h2 id="t-projeto">O projeto</h2>
+        <p>Cuidar da saúde depende de lembrar de datas: o retorno ao médico, o exame de rotina, a próxima dose de uma vacina. Quando um compromisso é esquecido, o cuidado fica interrompido e a vaga, que poderia atender outra pessoa, fica vazia.</p>
+        <p>O {{ produto }} reúne esses compromissos em um só lugar e avisa antes de cada um. Você registra uma vez, escolhe com quanta antecedência quer ser lembrado e acompanha tudo em uma agenda simples.</p>
+        <p>O projeto nasceu no FMU Tech Inovação, no eixo Saúde e Bem-Estar, alinhado ao Objetivo de Desenvolvimento Sustentável 3 da ONU.</p>
+      </section>
+
+      <section id="como-funciona" aria-labelledby="t-como">
+        <h2 id="t-como">Como funciona</h2>
+
+        <ol class="passos">
+          <li><strong>Cadastre o compromisso.</strong> Informe título, categoria (consulta, exame, vacina ou outro), data, horário e, se quiser, local e observações.</li>
+          <li><strong>Escolha a antecedência.</strong> De 30 minutos a 1 semana antes, para cada compromisso.</li>
+          <li><strong>Receba o aviso.</strong> Quando chega a hora, o aviso aparece na central de avisos e fica registrado, sem repetição para o mesmo compromisso.</li>
+        </ol>
+
+        <div class="recursos">
+          <div>
+            <h3>Disponível na versão {{ versao }}</h3>
+            <ul class="lista-recursos lista-disponivel">
+              <li>Cadastro, edição e exclusão de compromissos</li>
+              <li>Categorias: consulta, exame, vacina e outro</li>
+              <li>Agenda organizada por data e horário, com compromissos anteriores separados</li>
+              <li>Lembrete com antecedência configurável</li>
+              <li>Central de avisos com histórico e marcação de lidos</li>
+              <li>Notificações do navegador, com sua permissão, enquanto o {{ produto }} estiver aberto em uma aba</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Previsto para próximas versões</h3>
+            <ul class="lista-recursos lista-prevista">
+              <li>Avisos com o site fechado, por e-mail ou notificação push</li>
+              <li>Conta de usuário, para acessar seus compromissos de qualquer aparelho</li>
+              <li>Sugestão de locais a partir do Cadastro Nacional de Estabelecimentos de Saúde (CNES)</li>
+              <li>Integração com agendas digitais</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="equipe" aria-labelledby="t-equipe">
+        <h2 id="t-equipe">Equipe</h2>
+        <p>Estudantes da Faculdade Metropolitanas Unidas (FMU).</p>
+        <ul class="equipe">
+          <li>
+            <p class="equipe-funcao">Desenvolvimento</p>
+            <p class="equipe-nome">Miguel Araújo dos Santos</p>
+            <p class="equipe-matricula">Matrícula 2026110137</p>
+          </li>
+          <li>
+            <p class="equipe-funcao">UI/UX Design</p>
+            <p class="equipe-nome">Gustavo Opata de Jesus Silva</p>
+            <p class="equipe-matricula">Matrícula 2026114788</p>
+          </li>
+          <li>
+            <p class="equipe-funcao">QA/Tester</p>
+            <p class="equipe-nome">Francisco Rodrigues Borges</p>
+            <p class="equipe-matricula">Matrícula 2026109596</p>
+          </li>
+          <li>
+            <p class="equipe-funcao">Documentação</p>
+            <p class="equipe-nome">Gabriel Rodrigues Ramos</p>
+            <p class="equipe-matricula">Matrícula 2026112915</p>
+          </li>
+          <li>
+            <p class="equipe-funcao">Engenharia de Software</p>
+            <p class="equipe-nome">Guilherme Gregatti Silva</p>
+            <p class="equipe-matricula">Matrícula 2026110136</p>
+          </li>
+        </ul>
+      </section>
+
+      <section id="contato" aria-labelledby="t-contato">
+        <h2 id="t-contato">Contato</h2>
+        <p>Dúvidas, sugestões ou interesse no projeto? Fale com a equipe.</p>
+        <ul class="contatos">
+          <li>
+            <span class="contato-tipo">E-mail</span>
+            <a href="mailto:miguelaraujoaraujo01@gmail.com?subject=Contato%20sobre%20o%20Sauday">miguelaraujoaraujo01@gmail.com</a>
+          </li>
+          <li>
+            <span class="contato-tipo">Telefone e WhatsApp</span>
+            <a href="https://wa.me/5511995931635" target="_blank" rel="noopener">(11) 99593-1635<span class="sr-only"> (abre o WhatsApp em uma nova aba)</span></a>
+          </li>
+        </ul>
+      </section>
+
+      <section id="informacoes" aria-labelledby="t-info">
+        <h2 id="t-info">Informações e versão</h2>
+        <dl class="ficha">
+          <div><dt>Produto</dt><dd>{{ produto }}</dd></div>
+          <div><dt>Slogan</dt><dd>{{ slogan }}</dd></div>
+          <div><dt>Versão atual</dt><dd>{{ versao }}</dd></div>
+          <div><dt>Finalidade</dt><dd>Organização de compromissos relacionados à saúde</dd></div>
+          <div><dt>Natureza</dt><dd>Projeto acadêmico em desenvolvimento</dd></div>
+        </dl>
+        <p class="nota">O {{ produto }} é uma ferramenta de organização e lembretes. Ele não substitui orientação nem atendimento médico. Em caso de emergência, ligue 192 (SAMU).</p>
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock %}

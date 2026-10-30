@@ -1,0 +1,15 @@
+# Ambiente virtual e cache
+.venv/
+__pycache__/
+*.pyc
+
+# Segredos e configuração local
+.env
+
+# Banco de dados local (contém dados de saúde: não versionar)
+database/*.db
+database/*.sqlite3
+
+# Editor e sistema
+.vscode/
+.DS_Store

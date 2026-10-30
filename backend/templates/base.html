@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block titulo %}{{ produto }} | {{ slogan }}{% endblock %}</title>
+  <meta name="description" content="{{ produto }}: organize consultas, exames e vacinas e receba lembretes antes de cada compromisso.">
+  <meta name="theme-color" content="#10604C">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32.png') }}">
+  <link rel="icon" type="image/png" sizes="64x64" href="{{ url_for('static', filename='img/favicon-64.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="pagina-{{ pagina or 'erro' }}">
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="topo">
+    <div class="topo-interno">
+      <a class="topo-logo" href="{{ url_for('home') }}">
+        <img src="{{ url_for('static', filename='img/logo-horizontal.png') }}" alt="{{ produto }}, página inicial" width="758" height="178">
+      </a>
+
+      <nav class="topo-nav" aria-label="Principal">
+        <a href="{{ url_for('home') }}" {% if pagina == 'inicio' %}aria-current="page"{% endif %}>Início</a>
+        <a href="{{ url_for('home') }}#avisos">
+          Avisos
+          <span class="contador" id="contador-avisos" hidden></span>
+        </a>
+        <a href="{{ url_for('sobre') }}" {% if pagina == 'sobre' %}aria-current="page"{% endif %}>Sobre</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo" tabindex="-1">
+    {% block conteudo %}{% endblock %}
+  </main>
+
+  <footer class="rodape">
+    <div class="rodape-interno">
+      <p class="rodape-versao">{{ produto }} | {{ versao }}</p>
+      <p class="rodape-slogan">{{ slogan }}</p>
+      <p class="rodape-aviso">Ferramenta de organização e lembretes. Não substitui orientação ou atendimento médico.</p>
+    </div>
+  </footer>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>
