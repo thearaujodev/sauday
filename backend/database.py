@@ -1,9 +1,15 @@
+import os
 import sqlite3
 
-CAMINHO_BANCO = "database/healthreminder.db"
+# O caminho parte da pasta do projeto, e não da pasta em que o comando foi
+# executado: assim "python backend/app.py" e "cd backend && python app.py"
+# usam o mesmo banco.
+PASTA_PROJETO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+CAMINHO_BANCO = os.path.join(PASTA_PROJETO, "database", "healthreminder.db")
 
 
 def conectar():
+    os.makedirs(os.path.dirname(CAMINHO_BANCO), exist_ok=True)
     connection = sqlite3.connect(CAMINHO_BANCO, timeout=10)
     # Necessário em cada conexão para o SQLite respeitar o ON DELETE CASCADE.
     connection.execute("PRAGMA foreign_keys = ON")
@@ -39,6 +45,13 @@ def criar_tabela():
             ADD COLUMN reminded_at TEXT
         """)
 
+    # notify: a pessoa quer (1) ou não (0) ser notificada deste compromisso.
+    if "notify" not in colunas:
+        cursor.execute("""
+            ALTER TABLE appointments
+            ADD COLUMN notify INTEGER NOT NULL DEFAULT 1
+        """)
+
     # Avisos: registro de cada lembrete gerado. Guarda uma cópia dos dados do
     # compromisso no momento do aviso, para o histórico continuar correto mesmo
     # que o compromisso seja editado depois. Se o compromisso for excluído,
@@ -68,7 +81,8 @@ def criar_tabela():
     connection.close()
 
 
-def criar_agendamento(titulo, tipo, data, horario, local, observacoes, lembrete):
+def criar_agendamento(titulo, tipo, data, horario, local, observacoes, lembrete,
+                      notificar=True, criado_em=None):
     connection = conectar()
     cursor = connection.cursor()
 
@@ -80,9 +94,11 @@ def criar_agendamento(titulo, tipo, data, horario, local, observacoes, lembrete)
             time,
             location,
             notes,
-            reminder_minutes
+            reminder_minutes,
+            notify,
+            created_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP))
     """, (
         titulo,
         tipo,
@@ -90,7 +106,9 @@ def criar_agendamento(titulo, tipo, data, horario, local, observacoes, lembrete)
         horario,
         local,
         observacoes,
-        lembrete
+        lembrete,
+        1 if notificar else 0,
+        criado_em
     ))
 
     connection.commit()
@@ -109,11 +127,17 @@ def listar_agendamentos():
 
     cursor.execute("SELECT * FROM appointments ORDER BY date, time, id")
 
-    agendamentos = [dict(row) for row in cursor.fetchall()]
+    agendamentos = [como_dicionario(row) for row in cursor.fetchall()]
 
     connection.close()
 
     return agendamentos
+
+
+def como_dicionario(row):
+    agendamento = dict(row)
+    agendamento["notify"] = bool(agendamento.get("notify", 1))
+    return agendamento
 
 
 def buscar_agendamento(id):
@@ -131,19 +155,21 @@ def buscar_agendamento(id):
     connection.close()
 
     if agendamento:
-        return dict(agendamento)
+        return como_dicionario(agendamento)
 
     return None
 
 
-def atualizar_agendamento(id, titulo, tipo, data, horario, local, observacoes, lembrete):
+def atualizar_agendamento(id, titulo, tipo, data, horario, local, observacoes, lembrete,
+                          notificar=None):
     connection = conectar()
     cursor = connection.cursor()
 
     # Se a data, o horário ou a antecedência mudarem, o lembrete é "rearmado"
-    # (reminded_at volta a NULL). Editar só título, local ou observações
-    # não dispara um novo lembrete. No SQLite, as colunas à direita do SET
-    # sempre se referem aos valores antigos da linha.
+    # (reminded_at volta a NULL). Editar só título, local, observações ou
+    # ligar/desligar a notificação não dispara um novo lembrete. No SQLite,
+    # as colunas à direita do SET sempre se referem aos valores antigos da
+    # linha. notificar=None mantém a escolha atual.
     cursor.execute("""
         UPDATE appointments
         SET
@@ -154,6 +180,7 @@ def atualizar_agendamento(id, titulo, tipo, data, horario, local, observacoes, l
             location = ?,
             notes = ?,
             reminder_minutes = ?,
+            notify = COALESCE(?, notify),
             reminded_at = CASE
                 WHEN date <> ? OR time <> ? OR reminder_minutes <> ?
                 THEN NULL
@@ -168,6 +195,7 @@ def atualizar_agendamento(id, titulo, tipo, data, horario, local, observacoes, l
         local,
         observacoes,
         lembrete,
+        None if notificar is None else (1 if notificar else 0),
         data,
         horario,
         lembrete,

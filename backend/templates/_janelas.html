@@ -1,0 +1,228 @@
+{# Janelas compartilhadas por todas as páginas: formulário, confirmação,
+   ajuda sobre notificações e a gaveta de avisos. #}
+
+<dialog class="janela janela-form" id="janela-compromisso" aria-labelledby="titulo-form">
+  <form class="janela-conteudo" id="form-compromisso" novalidate>
+    <header class="janela-topo">
+      <div class="janela-topo-texto">
+        <p class="janela-sobretitulo" id="form-sobretitulo">Agenda de saúde</p>
+        <h2 id="titulo-form">Novo compromisso</h2>
+      </div>
+      <button type="button" class="btn-icone" data-fechar aria-label="Fechar">
+        <svg class="icone" aria-hidden="true"><use href="#i-fechar"/></svg>
+      </button>
+    </header>
+
+    <div class="janela-corpo">
+      <div class="faixa-aviso faixa-erro" id="form-erro" role="alert" hidden>
+        <svg class="icone" aria-hidden="true"><use href="#i-alerta"/></svg>
+        <p id="form-erro-texto"></p>
+      </div>
+
+      <div class="faixa-aviso faixa-info" id="form-nota-historico" hidden>
+        <svg class="icone" aria-hidden="true"><use href="#i-historico"/></svg>
+        <p>Este compromisso já aconteceu, então a data e o horário ficam como estão. Você pode corrigir os outros dados e anotar como foi.</p>
+      </div>
+
+      <fieldset class="secao-form">
+        <legend>O que é</legend>
+
+        <div class="campo">
+          <label for="title">Título <span class="obrigatorio" aria-hidden="true">*</span></label>
+          <input id="title" name="title" type="text" required aria-required="true" maxlength="120" autocomplete="off"
+                 placeholder="Ex.: Consulta com cardiologista" aria-describedby="erro-title">
+          <p class="campo-erro" id="erro-title" hidden></p>
+        </div>
+
+        <fieldset class="campo categorias">
+          <legend class="rotulo">Categoria</legend>
+          <div class="categorias-opcoes" id="categorias-opcoes">
+            <label class="categoria-opcao">
+              <input type="radio" name="type" value="consulta" checked>
+              <svg class="icone" aria-hidden="true"><use href="#i-consulta"/></svg><span>Consulta</span>
+            </label>
+            <label class="categoria-opcao">
+              <input type="radio" name="type" value="exame">
+              <svg class="icone" aria-hidden="true"><use href="#i-exame"/></svg><span>Exame</span>
+            </label>
+            <label class="categoria-opcao">
+              <input type="radio" name="type" value="vacina">
+              <svg class="icone" aria-hidden="true"><use href="#i-vacina"/></svg><span>Vacina</span>
+            </label>
+            <label class="categoria-opcao">
+              <input type="radio" name="type" value="outro">
+              <svg class="icone" aria-hidden="true"><use href="#i-outro"/></svg><span>Outro</span>
+            </label>
+          </div>
+        </fieldset>
+      </fieldset>
+
+      <fieldset class="secao-form" id="secao-quando">
+        <legend>Quando</legend>
+
+        <div class="atalhos-data" id="atalhos-data" role="group" aria-label="Atalhos de data">
+          <button type="button" class="chip" data-atalho-dias="0">Hoje</button>
+          <button type="button" class="chip" data-atalho-dias="1">Amanhã</button>
+          <button type="button" class="chip" data-atalho-dias="7">Daqui a 1 semana</button>
+        </div>
+
+        <div class="campo-linha">
+          <div class="campo">
+            <label for="date">Data <span class="obrigatorio" aria-hidden="true">*</span></label>
+            <input id="date" name="date" type="date" required aria-required="true" aria-describedby="erro-date dica-quando">
+            <p class="campo-erro" id="erro-date" hidden></p>
+          </div>
+          <div class="campo">
+            <label for="time">Horário <span class="obrigatorio" aria-hidden="true">*</span></label>
+            <input id="time" name="time" type="time" required aria-required="true" aria-describedby="erro-time dica-quando">
+            <p class="campo-erro" id="erro-time" hidden></p>
+          </div>
+        </div>
+
+        <p class="campo-dica" id="dica-quando">
+          <svg class="icone" aria-hidden="true"><use href="#i-relogio"/></svg>
+          <span id="dica-quando-texto">Horário de Brasília. Compromissos podem ser marcados a partir de agora.</span>
+        </p>
+      </fieldset>
+
+      <fieldset class="secao-form" id="secao-lembrete">
+        <legend>Lembrete</legend>
+
+        <div class="interruptor-linha">
+          <label for="notify" class="interruptor-rotulo">
+            <span class="interruptor-titulo">Notificar este compromisso</span>
+            <span class="campo-dica">Aviso no sino do Sauday e notificação no navegador.</span>
+          </label>
+          <input type="checkbox" class="interruptor" id="notify" name="notify" role="switch" checked>
+        </div>
+
+        <div class="campo" id="campo-antecedencia">
+          <label for="reminder_minutes">Avisar com antecedência de</label>
+          <select id="reminder_minutes" name="reminder_minutes" aria-describedby="previa-lembrete">
+            <option value="10080">1 semana</option>
+            <option value="2880">2 dias</option>
+            <option value="1440" selected>1 dia</option>
+            <option value="120">2 horas</option>
+            <option value="60">1 hora</option>
+            <option value="30">30 minutos</option>
+            <option value="15">15 minutos</option>
+            <option value="5">5 minutos</option>
+          </select>
+        </div>
+
+        <p class="previa-lembrete" id="previa-lembrete"></p>
+        <p class="campo-dica dica-permissao" id="dica-permissao" hidden></p>
+      </fieldset>
+
+      <fieldset class="secao-form">
+        <legend>Detalhes <span class="opcional">(opcional)</span></legend>
+
+        <div class="campo">
+          <label for="location">Local</label>
+          <input id="location" name="location" type="text" maxlength="120" placeholder="Ex.: UBS Vila Mariana">
+        </div>
+
+        <div class="campo">
+          <label for="notes">Observações</label>
+          <textarea id="notes" name="notes" rows="3" maxlength="500" placeholder="Ex.: levar exames anteriores, ir em jejum"></textarea>
+        </div>
+      </fieldset>
+    </div>
+
+    <footer class="janela-rodape">
+      <button type="button" class="btn btn-secundario" data-fechar>Cancelar</button>
+      <button type="submit" class="btn btn-primario" id="btn-salvar">Salvar compromisso</button>
+    </footer>
+  </form>
+</dialog>
+
+<dialog class="janela janela-pequena" id="janela-confirmar" aria-labelledby="confirmar-titulo" aria-describedby="confirmar-texto">
+  <form method="dialog" class="janela-conteudo">
+    <div class="janela-corpo confirmar-corpo">
+      <span class="confirmar-icone" aria-hidden="true"><svg class="icone"><use href="#i-excluir"/></svg></span>
+      <h2 id="confirmar-titulo">Excluir compromisso?</h2>
+      <p id="confirmar-texto"></p>
+    </div>
+    <footer class="janela-rodape">
+      <button class="btn btn-secundario" value="cancelar" autofocus>Cancelar</button>
+      <button class="btn btn-perigo" value="confirmar" id="confirmar-ok">Excluir</button>
+    </footer>
+  </form>
+</dialog>
+
+<dialog class="janela janela-pequena" id="janela-notificacoes" aria-labelledby="ajuda-titulo">
+  <form method="dialog" class="janela-conteudo">
+    <header class="janela-topo">
+      <div class="janela-topo-texto">
+        <p class="janela-sobretitulo">Notificações</p>
+        <h2 id="ajuda-titulo">Como os lembretes chegam até você</h2>
+      </div>
+      <button class="btn-icone" value="fechar" aria-label="Fechar">
+        <svg class="icone" aria-hidden="true"><use href="#i-fechar"/></svg>
+      </button>
+    </header>
+
+    <div class="janela-corpo ajuda-corpo">
+      <div class="ajuda-estado" data-ajuda="denied" hidden>
+        <p><strong>O navegador está bloqueando as notificações do Sauday.</strong> Para liberar:</p>
+        <ol class="passos-ajuda">
+          <li>Clique no <svg class="icone icone-texto" aria-hidden="true"><use href="#i-cadeado"/></svg> cadeado (ou no ícone de ajustes) ao lado do endereço do site.</li>
+          <li>Em <strong>Notificações</strong>, escolha <strong>Permitir</strong>.</li>
+          <li>Volte para esta aba. O Sauday percebe a mudança sozinho.</li>
+        </ol>
+      </div>
+      <div class="ajuda-estado" data-ajuda="default" hidden>
+        <p><strong>Falta só a sua permissão.</strong> Ao ligar a notificação de um compromisso, o navegador pergunta se o Sauday pode mostrar notificações. Escolha <strong>Permitir</strong>.</p>
+      </div>
+      <div class="ajuda-estado" data-ajuda="granted" hidden>
+        <p><strong>Tudo certo: as notificações estão liberadas neste navegador.</strong></p>
+      </div>
+      <div class="ajuda-estado" data-ajuda="inseguro" hidden>
+        <p><strong>Os navegadores só mostram notificações em conexões seguras.</strong> Neste computador, abra o Sauday por <strong>http://127.0.0.1:5000</strong> ou <strong>http://localhost:5000</strong>. Em outro aparelho, o site precisa estar publicado com https.</p>
+      </div>
+      <div class="ajuda-estado" data-ajuda="sem-suporte" hidden>
+        <p><strong>Este navegador não oferece notificações.</strong> Use uma versão recente do Chrome, Edge, Firefox ou Safari.</p>
+      </div>
+
+      <ul class="lista-ajuda">
+        <li><svg class="icone" aria-hidden="true"><use href="#i-relogio"/></svg><span>O aviso sai no minuto exato escolhido, mesmo com o Sauday minimizado ou em outra aba. Basta deixar uma aba do Sauday aberta.</span></li>
+        <li><svg class="icone" aria-hidden="true"><use href="#i-sino"/></svg><span>Nada se perde: todo aviso também fica guardado no sino, até você marcá-lo como lido.</span></li>
+        <li><svg class="icone" aria-hidden="true"><use href="#i-calendario-mais"/></svg><span>Quer ser avisado com o navegador fechado? Use <strong>Calendário</strong> no compromisso para levá-lo à agenda do celular, já com o alarme.</span></li>
+      </ul>
+    </div>
+
+    <footer class="janela-rodape">
+      <button class="btn btn-primario" value="ok">Entendi</button>
+    </footer>
+  </form>
+</dialog>
+
+<dialog class="gaveta" id="gaveta-avisos" aria-labelledby="titulo-avisos">
+  <div class="gaveta-conteudo">
+    <header class="gaveta-topo">
+      <div>
+        <h2 id="titulo-avisos">Avisos</h2>
+        <p class="gaveta-resumo" id="resumo-avisos">Carregando…</p>
+      </div>
+      <button type="button" class="btn-icone" data-fechar aria-label="Fechar avisos">
+        <svg class="icone" aria-hidden="true"><use href="#i-fechar"/></svg>
+      </button>
+    </header>
+
+    <div class="gaveta-barra">
+      <button type="button" class="btn-texto" id="btn-ler-todos" hidden>
+        <svg class="icone" aria-hidden="true"><use href="#i-check"/></svg>Marcar todos como lidos
+      </button>
+    </div>
+
+    <ul class="lista-avisos" id="lista-avisos" aria-busy="true">
+      <li class="esqueleto" aria-hidden="true"><span></span><span></span></li>
+      <li class="esqueleto" aria-hidden="true"><span></span><span></span></li>
+      <li class="sr-only">Carregando avisos…</li>
+    </ul>
+
+    <footer class="gaveta-rodape">
+      <div class="estado-notificacoes" data-estado-notificacoes></div>
+    </footer>
+  </div>
+</dialog>

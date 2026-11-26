@@ -1,125 +1,53 @@
 {% extends "base.html" %}
 
 {% block conteudo %}
-<div class="painel">
-  <section class="abertura" aria-labelledby="titulo-pagina">
-    <h1 id="titulo-pagina">Seus compromissos de saúde</h1>
-    <p>Registre consultas, exames e vacinas. O {{ produto }} avisa quando cada um estiver chegando.</p>
-    <a class="btn btn-secundario atalho-novo" href="#novo">Novo compromisso</a>
+<div class="pagina pagina-agenda">
+  <section class="hero" aria-labelledby="titulo-pagina">
+    <img class="hero-marca" src="{{ url_for('static', filename='img/simbolo.png') }}" alt="" width="210" height="210">
+
+    <div class="hero-texto">
+      <p class="hero-saudacao" id="hero-saudacao">Olá!</p>
+      <h1 id="titulo-pagina">Sua agenda de saúde</h1>
+      <p class="hero-relogio">
+        <svg class="icone" aria-hidden="true"><use href="#i-relogio"/></svg>
+        <span id="hero-data">Hoje</span>
+        <span class="hero-hora"><time id="hero-hora">--:--</time> em Brasília</span>
+      </p>
+      <p class="hero-resumo" id="hero-resumo">Carregando seus compromissos…</p>
+      <p class="hero-fuso" id="hero-fuso" hidden></p>
+    </div>
+
+    <aside class="destaque" id="destaque" aria-labelledby="destaque-rotulo" aria-busy="true">
+      <p class="destaque-rotulo" id="destaque-rotulo">Próximo compromisso</p>
+      <div class="destaque-conteudo" id="destaque-conteudo">
+        <div class="esqueleto" aria-hidden="true"><span></span><span></span><span></span></div>
+      </div>
+    </aside>
   </section>
 
-  <div class="mensagem" id="mensagem" role="status" aria-live="polite" hidden>
-    <p id="mensagem-texto"></p>
-    <button type="button" class="mensagem-fechar" id="mensagem-fechar" aria-label="Fechar mensagem">&times;</button>
-  </div>
-
-  <div class="grade">
-    <section class="bloco bloco-form" id="novo" aria-labelledby="titulo-form">
-      <h2 id="titulo-form">Novo compromisso</h2>
-      <p class="bloco-ajuda" id="ajuda-form">Campos marcados com * são obrigatórios.</p>
-
-      <form id="form-compromisso" novalidate aria-describedby="ajuda-form">
-        <div class="campo">
-          <label for="title">Título *</label>
-          <input id="title" name="title" type="text" required maxlength="120" autocomplete="off"
-                 placeholder="Ex.: Consulta com cardiologista" aria-describedby="erro-title">
-          <p class="campo-erro" id="erro-title" hidden></p>
-        </div>
-
-        <div class="campo">
-          <label for="type">Categoria *</label>
-          <select id="type" name="type" required>
-            <option value="consulta">Consulta</option>
-            <option value="exame">Exame</option>
-            <option value="vacina">Vacina</option>
-            <option value="outro">Outro</option>
-          </select>
-        </div>
-
-        <div class="campo-linha">
-          <div class="campo">
-            <label for="date">Data *</label>
-            <input id="date" name="date" type="date" required aria-describedby="erro-date">
-            <p class="campo-erro" id="erro-date" hidden></p>
-          </div>
-          <div class="campo">
-            <label for="time">Horário *</label>
-            <input id="time" name="time" type="time" required aria-describedby="erro-time">
-            <p class="campo-erro" id="erro-time" hidden></p>
-          </div>
-        </div>
-
-        <div class="campo">
-          <label for="reminder_minutes">Avisar com antecedência de</label>
-          <select id="reminder_minutes" name="reminder_minutes">
-            <option value="10080">1 semana</option>
-            <option value="1440" selected>1 dia</option>
-            <option value="120">2 horas</option>
-            <option value="60">1 hora</option>
-            <option value="30">30 minutos</option>
-          </select>
-        </div>
-
-        <div class="campo">
-          <label for="location">Local</label>
-          <input id="location" name="location" type="text" maxlength="120" placeholder="Ex.: UBS Vila Mariana">
-        </div>
-
-        <div class="campo">
-          <label for="notes">Observações</label>
-          <textarea id="notes" name="notes" rows="3" maxlength="500" placeholder="Ex.: levar exames anteriores"></textarea>
-        </div>
-
-        <div class="form-acoes">
-          <button type="submit" class="btn btn-primario" id="btn-salvar">Salvar compromisso</button>
-          <button type="button" class="btn btn-secundario" id="btn-cancelar" hidden>Cancelar edição</button>
-        </div>
-      </form>
-    </section>
-
-    <section class="bloco bloco-avisos" id="avisos" aria-labelledby="titulo-avisos" tabindex="-1">
-      <div class="bloco-topo">
-        <h2 id="titulo-avisos">Avisos</h2>
-        <button type="button" class="btn-texto" id="btn-ler-todos" hidden>Marcar todos como lidos</button>
-      </div>
-
-      <ul class="lista-avisos" id="lista-avisos" aria-busy="true">
-        <li class="esqueleto" aria-hidden="true"><span></span><span></span></li>
-        <li class="esqueleto" aria-hidden="true"><span></span><span></span></li>
-        <li class="sr-only">Carregando avisos…</li>
-      </ul>
-      <button type="button" class="btn-texto" id="btn-mais-avisos" hidden></button>
-
-      <div class="notificacoes" id="notificacoes" hidden>
-        <p id="notificacoes-texto"></p>
-        <button type="button" class="btn btn-secundario btn-pequeno" id="btn-notificacoes" hidden>Ativar notificações do navegador</button>
-      </div>
-    </section>
-
-    <section class="bloco bloco-agenda" aria-labelledby="titulo-agenda">
-      <div class="bloco-topo">
+  <section class="secao-lista" aria-labelledby="titulo-agenda">
+    <div class="secao-topo">
+      <div>
         <h2 id="titulo-agenda" tabindex="-1">Próximos compromissos</h2>
+        <p class="secao-subtitulo" id="subtitulo-agenda">Organizados por dia, do mais próximo ao mais distante.</p>
       </div>
+      <div class="estado-notificacoes" data-estado-notificacoes></div>
+    </div>
 
-      <ul class="agenda" id="lista-proximos" aria-busy="true">
-        <li class="esqueleto esqueleto-agenda" aria-hidden="true"><span></span><span></span><span></span></li>
-        <li class="esqueleto esqueleto-agenda" aria-hidden="true"><span></span><span></span><span></span></li>
-        <li class="esqueleto esqueleto-agenda" aria-hidden="true"><span></span><span></span><span></span></li>
-        <li class="sr-only">Carregando compromissos…</li>
+    <div class="faixa-dias" id="faixa-dias" role="group" aria-label="Filtrar por dia (próximas duas semanas)"></div>
+    <div class="filtros" id="filtros" role="group" aria-label="Filtrar por categoria"></div>
+
+    <div class="lista-agrupada" id="lista-agenda" aria-busy="true">
+      <ul class="cartoes">
+        <li class="esqueleto esqueleto-cartao" aria-hidden="true"><span></span><span></span><span></span></li>
+        <li class="esqueleto esqueleto-cartao" aria-hidden="true"><span></span><span></span><span></span></li>
       </ul>
-
-      <details class="passados" id="passados" hidden>
-        <summary id="resumo-passados">Compromissos anteriores</summary>
-        <ul class="agenda agenda-passada" id="lista-passados"></ul>
-      </details>
-    </section>
-  </div>
+      <p class="sr-only">Carregando compromissos…</p>
+    </div>
+  </section>
 </div>
 {% endblock %}
 
 {% block scripts %}
-<script>
-  window.SAUDAY = { simbolo: "{{ url_for('static', filename='img/simbolo.png') }}", icone: "{{ url_for('static', filename='img/favicon-64.png') }}" };
-</script>
-<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script src="{{ url_for('static', filename='js/agenda.js') }}"></script>
 {% endblock %}
