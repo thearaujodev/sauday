@@ -24,7 +24,16 @@ Esse efeito aparece nos números do absenteísmo, a falta sem aviso a consultas 
 - Em Campo Largo (PR), no primeiro semestre de 2026, **26,85%** dos atendimentos especializados agendados no SUS tiveram falta, o equivalente a **7.172 vagas** ociosas ([Band B](https://www.bandab.com.br/regiao-metropolitana-de-curitiba/pacientes-faltam-consultas-exames-sus-grande-curitiba-campo-largo/)).
 - Entre os motivos relatados para as faltas está o simples esquecimento ([Bem Paraná](https://www.bemparana.com.br/noticia/com-informatizacao-e-metodologia-e-possivel-reduzir-o-indice-de-faltosos-no-sus)).
 
-**Público e contexto:** pessoas que organizam a própria rotina de saúde ou a de familiares, principalmente quem tem vários compromissos ao longo do ano (consultas de acompanhamento, exames periódicos, vacinas). O contexto é o uso cotidiano, no celular ou no computador.
+### Público-alvo
+
+Adultos que organizam a própria rotina de saúde, ou a de familiares, e têm vários compromissos ao longo do ano. O uso é cotidiano, no celular ou no computador, por usuários do SUS ou de planos de saúde.
+
+| Perfil | O que precisa |
+|--------|---------------|
+| Paciente em acompanhamento, como quem tem hipertensão ou diabetes | Não perder retornos marcados com meses de distância |
+| Pessoa em esquema vacinal, como as doses da hepatite B | Lembrar da próxima dose na data certa |
+| Cuidador ou cuidadora de filhos ou de pais idosos | Ver tudo num só lugar e ser avisado por eles |
+| Pessoa com rotina corrida | Ser avisada sem precisar lembrar de abrir nada |
 
 **Delimitação:** o Sauday **não** é clínica, hospital, laboratório nem plano de saúde. A primeira versão trata de uma única coisa: **agendamentos e lembretes**.
 
@@ -43,6 +52,40 @@ Os indicadores de absenteísmo acima vêm de estudos e levantamentos municipais,
 ## 2. Proposta de solução
 
 O Sauday ataca o esquecimento diretamente: o usuário cadastra o compromisso uma vez, escolhe com quanta antecedência quer ser avisado, e o sistema confere, no minuto certo, o que está na janela de envio e registra um aviso, sem nunca duplicá-lo.
+
+### Objetivos
+
+**Objetivo geral:** auxiliar pessoas que cuidam da própria saúde, ou da de familiares, a não perder consultas, exames e vacinas, por meio de uma agenda web que avisa cada compromisso na hora certa.
+
+**Objetivos específicos:**
+
+1. Registrar compromissos de saúde por categoria, com data, horário, local e observações.
+2. Impedir o agendamento em datas e horários que já passaram, sempre no horário de Brasília.
+3. Avisar o usuário com a antecedência que ele escolher, por notificação do navegador e por aviso guardado no site.
+4. Garantir um único aviso por lembrete, mesmo quando o servidor e o site verificam ao mesmo tempo.
+5. Permitir ligar e desligar a notificação de cada compromisso, separadamente.
+6. Manter um histórico de cuidados, com busca, anotações e atalho para agendar o retorno.
+7. Exportar compromissos para a agenda do celular ou do computador, já com o alarme.
+8. Oferecer uma interface acessível e responsiva, do celular ao computador.
+
+### Requisitos funcionais
+
+| ID | Requisito |
+|----|-----------|
+| RF01 | Cadastrar compromisso com título, categoria, data, horário, local, observações, notificação e antecedência |
+| RF02 | Editar e excluir compromissos, com confirmação antes de excluir |
+| RF03 | Listar os próximos compromissos por dia, com filtros por categoria e pelos próximos 14 dias |
+| RF04 | Recusar compromissos em data ou horário que já passou, no horário de Brasília |
+| RF05 | Ligar e desligar a notificação de cada compromisso |
+| RF06 | Gerar o aviso quando o compromisso entra na janela de antecedência |
+| RF07 | Mostrar a notificação do navegador no minuto do aviso, também com a aba em segundo plano |
+| RF08 | Listar os avisos no sino e marcá-los como lidos, um a um ou todos |
+| RF09 | Mover os compromissos passados para o histórico, com busca, filtros e anotações |
+| RF10 | Agendar o retorno a partir do histórico, com o formulário já preenchido |
+| RF11 | Exportar o compromisso como arquivo de calendário, com alarme |
+| RF12 | Exibir a página Sobre, com o projeto, a equipe e o contato |
+
+Os requisitos não funcionais, as regras de negócio, as histórias de usuário, os diagramas UML, a modelagem do banco de dados e os fluxogramas estão na **[documentação teórica (PDF)](docs/sauday-documentacao-teorica.pdf)**.
 
 **Fluxo principal**
 1. O usuário cadastra um compromisso: título, categoria, data e horário, local, observações, se quer ser notificado e com quanta antecedência. Só é possível marcar de agora em diante, sempre no **horário de Brasília**.
@@ -207,7 +250,7 @@ sauday/
 │   ├── js/                 # nucleo.js (todas as páginas), agenda.js, historico.js e sw.js
 │   └── img/                # logo oficial e favicons
 ├── database/               # banco local (não versionado)
-├── docs/                   # requisitos, diagramas e decisões técnicas
+├── docs/                   # documentação teórica em PDF (requisitos, diagramas, banco de dados)
 ├── requirements.txt
 └── README.md
 ```
@@ -222,10 +265,13 @@ sauday/
 | Gabriel Rodrigues Ramos | 2026112915 | Documentação |
 | Guilherme Gregatti Silva | 2026110136 | Engenharia de Software |
 
-## 8. Roadmap
+## 8. Entregas
 
-- [x] **Checkpoint 1:** problema, solução, identidade visual, pitch, API e interface iniciais
-- [x] **Alpha 0.1:** logo oficial aplicada, página Sobre, edição de compromissos, central de avisos, notificações do navegador e estados de carregamento
-- [x] **Versão 1.0:** histórico de cuidados, notificação por compromisso, datas só de agora em diante no horário de Brasília, notificações no minuto exato, nova interface com janelas e exportação para calendário
-- [ ] **Checkpoint 2:** protótipo com fluxo principal navegável, README com prints e vídeo de demonstração
-- [ ] **Apresentação final:** pitch de 5 minutos, projeto funcionando e repositório completo
+| Entrega | O que contém | Situação |
+|---------|--------------|----------|
+| Checkpoint 1 | Problema, proposta de solução, identidade visual, pitch inicial, API e interface iniciais | Concluída |
+| Alpha 0.1 | Logo oficial, página Sobre, edição de compromissos, central de avisos, notificações do navegador e estados de carregamento | Concluída |
+| Versão 1.0 | Histórico de cuidados, notificação por compromisso, datas só de agora em diante no horário de Brasília, notificações no minuto exato, nova interface com janelas e exportação para calendário | Concluída |
+| Documentação teórica | Público-alvo, objetivos, requisitos, engenharia de software, banco de dados, fluxogramas e UI/UX: [PDF](docs/sauday-documentacao-teorica.pdf) | Concluída |
+| Checkpoint 2 | Protótipo com fluxo principal navegável, README com prints e vídeo de demonstração | Pendente |
+| Apresentação final | Pitch de 5 minutos, projeto funcionando e repositório completo | Pendente |
