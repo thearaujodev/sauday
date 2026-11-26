@@ -1,11 +1,12 @@
 import os
 import tempfile
 import unittest
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from unittest import mock
 
 import database
-from reminders import processar_lembretes, verificar_lembretes
+from reminders import processar_lembretes, segundos_ate_proximo_lembrete, verificar_lembretes
+from tempo import FUSO_BRASILIA, agora_brasilia, para_utc
 
 
 def agendamento_base(**alteracoes):
@@ -67,6 +68,57 @@ class VerificarLembretesTest(unittest.TestCase):
         agora = datetime(2026, 10, 19, 12, 0)
         invalido = agendamento_base(date="20/10/2026")
         self.assertEqual(verificar_lembretes([invalido], agora), [])
+
+    def test_antecedencia_absurda_nao_derruba_a_verificacao(self):
+        agora = datetime(2026, 10, 19, 12, 0)
+        absurdo = agendamento_base(id=2, reminder_minutes=10 ** 12)
+        resultado = verificar_lembretes([absurdo, agendamento_base()], agora)
+        self.assertEqual([r["id"] for r in resultado], [1])
+
+    def test_notificacao_desligada_nao_lembra(self):
+        agora = datetime(2026, 10, 19, 12, 0)
+        self.assertEqual(verificar_lembretes([agendamento_base(notify=False)], agora), [])
+        self.assertEqual(len(verificar_lembretes([agendamento_base(notify=True)], agora)), 1)
+
+    def test_antecedencia_zero_lembra_na_hora(self):
+        na_hora = agendamento_base(reminder_minutes=0)
+        self.assertEqual(verificar_lembretes([na_hora], datetime(2026, 10, 20, 9, 59)), [])
+        self.assertEqual(len(verificar_lembretes([na_hora], datetime(2026, 10, 20, 10, 0))), 1)
+        self.assertEqual(len(verificar_lembretes([na_hora], datetime(2026, 10, 20, 10, 0, 59))), 1)
+        self.assertEqual(verificar_lembretes([na_hora], datetime(2026, 10, 20, 10, 1)), [])
+
+    def test_quanto_falta_para_o_proximo_lembrete(self):
+        agora = datetime(2026, 10, 19, 9, 0)
+        agendamentos = [
+            agendamento_base(),                                   # lembrete às 10:00 do dia 19
+            agendamento_base(id=2, time="09:30", reminder_minutes=1440),  # às 09:30 do dia 19
+            agendamento_base(id=3, notify=False, time="09:10"),   # desligado: ignorado
+            agendamento_base(id=4, reminded_at="2026-10-19 08:00:00"),
+        ]
+        self.assertEqual(segundos_ate_proximo_lembrete(agendamentos, agora), 30 * 60)
+        self.assertIsNone(segundos_ate_proximo_lembrete([], agora))
+
+
+class HorarioDeBrasiliaTest(unittest.TestCase):
+    def test_fuso_e_conversao(self):
+        self.assertEqual(FUSO_BRASILIA.utcoffset(datetime(2026, 11, 25, 12)), timedelta(hours=-3))
+        self.assertEqual(
+            para_utc(datetime(2026, 11, 26, 10, 0)),
+            datetime(2026, 11, 26, 13, 0, tzinfo=timezone.utc)
+        )
+
+    def test_agora_brasilia_independe_do_fuso_da_maquina(self):
+        agora = agora_brasilia()
+        self.assertIsNone(agora.tzinfo)
+        esperado = datetime.now(timezone.utc) - timedelta(hours=3)
+        self.assertLess(abs((esperado.replace(tzinfo=None) - agora).total_seconds()), 5)
+
+    def test_banco_fica_na_pasta_do_projeto(self):
+        self.assertTrue(os.path.isabs(database.CAMINHO_BANCO))
+        self.assertEqual(
+            os.path.normpath(database.CAMINHO_BANCO).split(os.sep)[-2:],
+            ["database", "healthreminder.db"]
+        )
 
 
 class ProcessarLembretesTest(BancoTemporario):
