@@ -273,3 +273,4 @@ sauday/
 | Alpha 0.1 | Logo oficial, página Sobre, edição de compromissos, central de avisos, notificações do navegador e estados de carregamento | Concluída |
 | Versão 1.0 | Histórico de cuidados, notificação por compromisso, datas só de agora em diante no horário de Brasília, notificações no minuto exato, nova interface com janelas e exportação para calendário | Concluída |
 | Documentação teórica | Público-alvo, objetivos, requisitos, engenharia de software, banco de dados, fluxogramas e UI/UX, nas normas da ABNT: [PDF](docs/sauday-documentacao-teorica.pdf) e [Word](docs/sauday-documentacao-teorica.docx) | Concluída |
+| Checkpoint 2 | Protótipo com fluxo principal navegável, README com prints e vídeo de demonstração | Concluída |
