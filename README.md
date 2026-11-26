@@ -45,7 +45,7 @@ Adultos que organizam a própria rotina de saúde, ou a de familiares, e têm v�
 | [OpenDataSUS](https://opendatasus.saude.gov.br/) | Ministério da Saúde | Catálogo de dados abertos para localizar conjuntos complementares, como dados de vacinação (a definir) |
 | [Portal Brasileiro de Dados Abertos](https://dados.gov.br/) | Governo Federal | Fonte alternativa dos mesmos conjuntos |
 
-Os indicadores de absenteísmo acima vêm de estudos e levantamentos municipais, citados nas fontes. A integração efetiva com o CNES está prevista para o Checkpoint 2.
+Os indicadores de absenteísmo acima vêm de estudos e levantamentos municipais, citados nas fontes. A integração efetiva com o CNES está entre os trabalhos futuros.
 
 ---
 
@@ -273,5 +273,3 @@ sauday/
 | Alpha 0.1 | Logo oficial, página Sobre, edição de compromissos, central de avisos, notificações do navegador e estados de carregamento | Concluída |
 | Versão 1.0 | Histórico de cuidados, notificação por compromisso, datas só de agora em diante no horário de Brasília, notificações no minuto exato, nova interface com janelas e exportação para calendário | Concluída |
 | Documentação teórica | Público-alvo, objetivos, requisitos, engenharia de software, banco de dados, fluxogramas e UI/UX, nas normas da ABNT: [PDF](docs/sauday-documentacao-teorica.pdf) e [Word](docs/sauday-documentacao-teorica.docx) | Concluída |
-| Checkpoint 2 | Protótipo com fluxo principal navegável, README com prints e vídeo de demonstração | Pendente |
-| Apresentação final | Pitch de 5 minutos, projeto funcionando e repositório completo | Pendente |
