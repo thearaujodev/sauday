@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>{% block titulo %}{{ produto }} | {{ slogan }}{% endblock %}</title>
   <meta name="description" content="{{ produto }}: organize consultas, exames e vacinas e receba lembretes antes de cada compromisso.">
   <meta name="theme-color" content="#10604C">
@@ -14,23 +14,37 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body class="pagina-{{ pagina or 'erro' }}">
+<body class="pagina-{{ pagina or 'erro' }}" data-pagina="{{ pagina or 'erro' }}">
   <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+  {% include "_icones.html" %}
 
   <header class="topo">
     <div class="topo-interno">
       <a class="topo-logo" href="{{ url_for('home') }}">
-        <img src="{{ url_for('static', filename='img/logo-horizontal.png') }}" alt="{{ produto }}, página inicial" width="758" height="178">
+        <img src="{{ url_for('static', filename='img/logo-horizontal.png') }}" alt="{{ produto }}, agenda" width="758" height="178">
       </a>
 
       <nav class="topo-nav" aria-label="Principal">
-        <a href="{{ url_for('home') }}" {% if pagina == 'inicio' %}aria-current="page"{% endif %}>Início</a>
-        <a href="{{ url_for('home') }}#avisos">
-          Avisos
-          <span class="contador" id="contador-avisos" hidden></span>
+        <a href="{{ url_for('home') }}" {% if pagina == 'inicio' %}aria-current="page"{% endif %}>
+          <svg class="icone" aria-hidden="true"><use href="#i-agenda"/></svg>Agenda
         </a>
-        <a href="{{ url_for('sobre') }}" {% if pagina == 'sobre' %}aria-current="page"{% endif %}>Sobre</a>
+        <a href="{{ url_for('historico') }}" {% if pagina == 'historico' %}aria-current="page"{% endif %}>
+          <svg class="icone" aria-hidden="true"><use href="#i-historico"/></svg>Histórico
+        </a>
+        <a href="{{ url_for('sobre') }}" {% if pagina == 'sobre' %}aria-current="page"{% endif %}>
+          <svg class="icone" aria-hidden="true"><use href="#i-sobre"/></svg>Sobre
+        </a>
       </nav>
+
+      <div class="topo-acoes">
+        <button type="button" class="btn-icone btn-sino" data-abrir-avisos aria-haspopup="dialog" aria-controls="gaveta-avisos" aria-label="Avisos">
+          <svg class="icone" aria-hidden="true"><use href="#i-sino"/></svg>
+          <span class="contador" data-contador-avisos hidden></span>
+        </button>
+        <button type="button" class="btn btn-primario btn-novo" data-novo-compromisso aria-haspopup="dialog">
+          <svg class="icone" aria-hidden="true"><use href="#i-mais"/></svg><span class="btn-novo-texto">Novo compromisso</span>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -40,12 +54,50 @@
 
   <footer class="rodape">
     <div class="rodape-interno">
-      <p class="rodape-versao">{{ produto }} | {{ versao }}</p>
-      <p class="rodape-slogan">{{ slogan }}</p>
-      <p class="rodape-aviso">Ferramenta de organização e lembretes. Não substitui orientação ou atendimento médico.</p>
+      <img class="rodape-simbolo" src="{{ url_for('static', filename='img/simbolo.png') }}" alt="" width="40" height="40">
+      <div>
+        <p class="rodape-versao">{{ produto }} | {{ versao }}</p>
+        <p class="rodape-slogan">{{ slogan }}</p>
+      </div>
+      <p class="rodape-aviso">Ferramenta de organização e lembretes. Não substitui orientação ou atendimento médico. Horários no fuso de Brasília.</p>
     </div>
   </footer>
 
+  <!-- Navegação inferior, só no celular: fica ao alcance do polegar. -->
+  <nav class="nav-inferior" aria-label="Principal">
+    <a href="{{ url_for('home') }}" {% if pagina == 'inicio' %}aria-current="page"{% endif %}>
+      <svg class="icone" aria-hidden="true"><use href="#i-agenda"/></svg><span>Agenda</span>
+    </a>
+    <a href="{{ url_for('historico') }}" {% if pagina == 'historico' %}aria-current="page"{% endif %}>
+      <svg class="icone" aria-hidden="true"><use href="#i-historico"/></svg><span>Histórico</span>
+    </a>
+    <button type="button" class="nav-inferior-novo" data-novo-compromisso aria-haspopup="dialog" aria-label="Novo compromisso">
+      <svg class="icone" aria-hidden="true"><use href="#i-mais"/></svg>
+    </button>
+    <button type="button" data-abrir-avisos aria-haspopup="dialog" aria-controls="gaveta-avisos" aria-label="Avisos">
+      <svg class="icone" aria-hidden="true"><use href="#i-sino"/></svg><span>Avisos</span>
+      <span class="contador" data-contador-avisos hidden></span>
+    </button>
+    <a href="{{ url_for('sobre') }}" {% if pagina == 'sobre' %}aria-current="page"{% endif %}>
+      <svg class="icone" aria-hidden="true"><use href="#i-sobre"/></svg><span>Sobre</span>
+    </a>
+  </nav>
+
+  {% include "_janelas.html" %}
+
+  <div class="mensagens">
+    <div id="mensagens-status" class="mensagens-pilha" aria-live="polite" aria-relevant="additions"></div>
+    <div id="mensagens-alerta" class="mensagens-pilha" aria-live="assertive" aria-relevant="additions"></div>
+  </div>
+
+  <script>
+    window.SAUDAY = {
+      simbolo: "{{ url_for('static', filename='img/simbolo.png') }}",
+      icone: "{{ url_for('static', filename='img/apple-touch-icon.png') }}",
+      selo: "{{ url_for('static', filename='img/favicon-64.png') }}"
+    };
+  </script>
+  <script src="{{ url_for('static', filename='js/nucleo.js') }}"></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>
