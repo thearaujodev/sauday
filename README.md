@@ -85,7 +85,7 @@ O Sauday ataca o esquecimento diretamente: o usuário cadastra o compromisso uma
 | RF11 | Exportar o compromisso como arquivo de calendário, com alarme |
 | RF12 | Exibir a página Sobre, com o projeto, a equipe e o contato |
 
-Os requisitos não funcionais, as regras de negócio, as histórias de usuário, os diagramas UML, a modelagem do banco de dados e os fluxogramas estão na **[documentação teórica (PDF)](docs/sauday-documentacao-teorica.pdf)**.
+Os requisitos não funcionais, as regras de negócio, as histórias de usuário, os diagramas UML, a modelagem do banco de dados e os fluxogramas estão na **[documentação teórica (PDF, nas normas da ABNT)](docs/sauday-documentacao-teorica.pdf)**, também disponível em [Word](docs/sauday-documentacao-teorica.docx).
 
 **Fluxo principal**
 1. O usuário cadastra um compromisso: título, categoria, data e horário, local, observações, se quer ser notificado e com quanta antecedência. Só é possível marcar de agora em diante, sempre no **horário de Brasília**.
@@ -250,7 +250,7 @@ sauday/
 │   ├── js/                 # nucleo.js (todas as páginas), agenda.js, historico.js e sw.js
 │   └── img/                # logo oficial e favicons
 ├── database/               # banco local (não versionado)
-├── docs/                   # documentação teórica em PDF (requisitos, diagramas, banco de dados)
+├── docs/                   # documentação teórica na ABNT, em PDF e Word (requisitos, diagramas, banco de dados)
 ├── requirements.txt
 └── README.md
 ```
@@ -272,6 +272,6 @@ sauday/
 | Checkpoint 1 | Problema, proposta de solução, identidade visual, pitch inicial, API e interface iniciais | Concluída |
 | Alpha 0.1 | Logo oficial, página Sobre, edição de compromissos, central de avisos, notificações do navegador e estados de carregamento | Concluída |
 | Versão 1.0 | Histórico de cuidados, notificação por compromisso, datas só de agora em diante no horário de Brasília, notificações no minuto exato, nova interface com janelas e exportação para calendário | Concluída |
-| Documentação teórica | Público-alvo, objetivos, requisitos, engenharia de software, banco de dados, fluxogramas e UI/UX: [PDF](docs/sauday-documentacao-teorica.pdf) | Concluída |
+| Documentação teórica | Público-alvo, objetivos, requisitos, engenharia de software, banco de dados, fluxogramas e UI/UX, nas normas da ABNT: [PDF](docs/sauday-documentacao-teorica.pdf) e [Word](docs/sauday-documentacao-teorica.docx) | Concluída |
 | Checkpoint 2 | Protótipo com fluxo principal navegável, README com prints e vídeo de demonstração | Pendente |
 | Apresentação final | Pitch de 5 minutos, projeto funcionando e repositório completo | Pendente |
