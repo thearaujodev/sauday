@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block titulo %}Histórico de cuidados | {{ produto }}{% endblock %}
+
+{% block conteudo %}
+<div class="pagina pagina-historico">
+  <section class="hero hero-historico" aria-labelledby="titulo-pagina">
+    <img class="hero-marca" src="{{ url_for('static', filename='img/simbolo.png') }}" alt="" width="210" height="210">
+
+    <div class="hero-texto">
+      <p class="hero-saudacao">Sua trajetória de cuidados</p>
+      <h1 id="titulo-pagina">Histórico</h1>
+      <p class="hero-resumo" id="resumo-historico">Carregando seu histórico…</p>
+      <p class="hero-apoio">Os compromissos que já passaram ficam guardados aqui. Anote como foi e agende o retorno quando precisar.</p>
+    </div>
+
+    <dl class="numeros" id="numeros-historico" aria-busy="true">
+      <div class="numero"><dt>Consultas</dt><dd>–</dd></div>
+      <div class="numero"><dt>Exames</dt><dd>–</dd></div>
+      <div class="numero"><dt>Vacinas</dt><dd>–</dd></div>
+    </dl>
+  </section>
+
+  <section class="secao-lista" aria-labelledby="titulo-linha-do-tempo">
+    <div class="secao-topo">
+      <div>
+        <h2 id="titulo-linha-do-tempo" tabindex="-1">Linha do tempo</h2>
+        <p class="secao-subtitulo">Do mais recente para o mais antigo.</p>
+      </div>
+      <div class="busca">
+        <label class="sr-only" for="busca-historico">Buscar no histórico</label>
+        <svg class="icone" aria-hidden="true"><use href="#i-busca"/></svg>
+        <input type="search" id="busca-historico" placeholder="Buscar por título, local ou anotação" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="filtros" id="filtros-historico" role="group" aria-label="Filtrar por categoria"></div>
+
+    <div class="lista-agrupada" id="lista-historico" aria-busy="true">
+      <ul class="cartoes">
+        <li class="esqueleto esqueleto-cartao" aria-hidden="true"><span></span><span></span><span></span></li>
+        <li class="esqueleto esqueleto-cartao" aria-hidden="true"><span></span><span></span><span></span></li>
+      </ul>
+      <p class="sr-only">Carregando histórico…</p>
+    </div>
+    <p class="sr-only" id="resultado-busca" aria-live="polite"></p>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/historico.js') }}"></script>
+{% endblock %}
