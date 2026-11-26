@@ -592,7 +592,9 @@
     let temporizador = null;
     const remover = () => {
       clearTimeout(temporizador);
+      const tinhaFoco = mensagem.contains(document.activeElement);
       mensagem.remove();
+      if (tinhaFoco) focarConteudo(); // o foco do teclado não fica perdido
     };
 
     if (acao) {
@@ -606,12 +608,17 @@
     // Some sozinha (menos erros), mas pausa enquanto o mouse ou o foco estão nela.
     const tempo = duracao || (acao ? 10 : 6) * SEGUNDO;
     const iniciar = () => {
+      clearTimeout(temporizador);
       if (tipo !== "erro") temporizador = setTimeout(remover, tempo);
     };
     mensagem.addEventListener("mouseenter", () => clearTimeout(temporizador));
     mensagem.addEventListener("focusin", () => clearTimeout(temporizador));
-    mensagem.addEventListener("mouseleave", iniciar);
-    mensagem.addEventListener("focusout", iniciar);
+    mensagem.addEventListener("mouseleave", () => {
+      if (!mensagem.contains(document.activeElement)) iniciar();
+    });
+    mensagem.addEventListener("focusout", (evento) => {
+      if (!mensagem.contains(evento.relatedTarget) && !mensagem.matches(":hover")) iniciar();
+    });
 
     pilha.append(mensagem);
     while (pilha.children.length > 3) pilha.firstElementChild.remove();

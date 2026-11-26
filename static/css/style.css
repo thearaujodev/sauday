@@ -414,7 +414,7 @@ img { max-width: 100%; height: auto; display: block; }
   font-weight: 600;
   text-align: center;
 }
-.chip[aria-pressed="true"] .chip-contagem { background: rgb(255 255 255 / 22%); color: var(--branco); }
+.chip[aria-pressed="true"] .chip-contagem { background: var(--verde-escuro); color: var(--branco); }
 .chip-dia { border-style: dashed; border-color: var(--verde-sauday); color: var(--verde-sauday); font-weight: 600; }
 .chip-dia .icone { order: 2; width: 15px; height: 15px; }
 
@@ -566,6 +566,7 @@ img { max-width: 100%; height: auto; display: block; }
   font-weight: 500;
 }
 .pilula-estado > .icone { width: 18px; height: 18px; }
+.pilula-texto { flex: 1 1 12rem; min-width: 0; }
 .pilula-estado.ok { border-color: transparent; background: var(--folha-forte); color: var(--verde-escuro); }
 .pilula-estado.pendente { border-color: var(--verde-dia); color: var(--tinta); }
 .pilula-estado.pendente > .icone { color: var(--verde-sauday); }
@@ -731,10 +732,12 @@ img { max-width: 100%; height: auto; display: block; }
   overflow-wrap: anywhere;
 }
 .cartao-linha > .icone { width: 17px; height: 17px; margin-top: 2px; color: var(--verde-sauday); }
-.cartao-quando { flex-wrap: wrap; color: var(--tinta); font-weight: 500; }
+.cartao-quando { color: var(--tinta); font-weight: 500; }
 .cartao-notas span { white-space: pre-line; }
 
 .contagem {
+  display: inline-block;
+  margin-left: 2px;
   padding: 1px 9px;
   border-radius: var(--pilula);
   background: var(--folha-forte);
@@ -755,7 +758,6 @@ img { max-width: 100%; height: auto; display: block; }
   padding-top: 12px;
   border-top: 1px dashed var(--borda);
 }
-.cartao-lembrete { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; min-width: 0; }
 .cartao-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; margin-left: auto; }
 
 .lembrete-status { display: inline-flex; align-items: center; gap: 6px; font-size: .84rem; color: var(--cinza); }
@@ -822,6 +824,17 @@ img { max-width: 100%; height: auto; display: block; }
   .cartao-acoes .rotulo { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .cartao-acoes .btn-texto { width: 40px; justify-content: center; padding: 0; }
   .cartao-acoes .btn-secundario .rotulo { position: static; width: auto; height: auto; clip: auto; }
+  .cartao-acoes .btn-secundario { width: auto; padding: 6px 14px; }
+
+  /* Filtros numa linha só, com rolagem lateral (como a faixa de dias). */
+  .filtros {
+    flex-wrap: nowrap;
+    margin: 0 calc(var(--gutter) * -1) 20px;
+    padding: 2px var(--gutter) 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .filtros::-webkit-scrollbar { display: none; }
 }
 
 /* Lista vazia, erro e esqueleto */
@@ -1015,14 +1028,14 @@ img { max-width: 100%; height: auto; display: block; }
 .secao-form > legend + * { clear: left; }
 .opcional { font-family: var(--fonte-texto); font-size: .85rem; font-weight: 500; color: var(--cinza); }
 
-.campo { display: grid; gap: 6px; margin-bottom: 14px; }
+.campo { display: grid; gap: 6px; align-content: start; margin-bottom: 14px; }
 .campo-linha { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 @media (max-width: 360px) { .campo-linha { grid-template-columns: 1fr; } }
 
 label, .rotulo { font-size: .9rem; font-weight: 600; }
 .obrigatorio { color: var(--erro); }
 
-input:not([type="checkbox"]):not([type="radio"]),
+input:where(:not([type="checkbox"], [type="radio"])),
 select,
 textarea {
   width: 100%;
@@ -1036,10 +1049,10 @@ textarea {
   transition: border-color var(--rapido), box-shadow var(--rapido);
 }
 textarea { resize: vertical; min-height: 88px; }
-input:not([type="checkbox"]):not([type="radio"]):hover,
+input:where(:not([type="checkbox"], [type="radio"])):hover,
 select:hover,
 textarea:hover { border-color: var(--trilho); }
-input:not([type="checkbox"]):not([type="radio"]):focus-visible,
+input:where(:not([type="checkbox"], [type="radio"])):focus-visible,
 select:focus-visible,
 textarea:focus-visible {
   outline: 2px solid transparent;

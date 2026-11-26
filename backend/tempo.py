@@ -7,6 +7,7 @@ fuso configurado no computador onde o servidor roda. Assim o Sauday se
 comporta igual em um notebook em São Paulo ou em um servidor em UTC.
 """
 
+import logging
 from datetime import datetime, timedelta, timezone
 
 NOME_FUSO = "America/Sao_Paulo"
@@ -30,3 +31,14 @@ def agora_brasilia():
 def para_utc(momento):
     """Converte uma data e hora de Brasília (sem fuso) para UTC."""
     return momento.replace(tzinfo=FUSO_BRASILIA).astimezone(timezone.utc)
+
+
+def configurar_log():
+    """Registros do terminal com data e hora de Brasília, como o resto do Sauday."""
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s | %(levelname)s | %(message)s"
+    )
+    logging.Formatter.converter = staticmethod(
+        lambda segundos: datetime.fromtimestamp(segundos, FUSO_BRASILIA).timetuple()
+    )
