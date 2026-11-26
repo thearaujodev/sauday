@@ -7,7 +7,7 @@
 Plataforma web para organizar consultas, exames e vacinas, com lembretes automáticos antes de cada compromisso de saúde.
 
 > Projeto do **FMU Tech Inovação 2026.2**, eixo Saúde e Bem-Estar, alinhado ao **ODS 3 (Saúde e Bem-Estar)**.
-> Versão atual: **Sauday | Alpha 0.1**, com API, interface e central de avisos funcionando.
+> Versão atual: **Sauday | 1.0**, com agenda, histórico de cuidados, notificação por compromisso e horários de Brasília.
 > O projeto também aparece como *HealthReminder* no nome do banco de dados e em versões anteriores.
 
 ---
@@ -42,28 +42,42 @@ Os indicadores de absenteísmo acima vêm de estudos e levantamentos municipais,
 
 ## 2. Proposta de solução
 
-O Sauday ataca o esquecimento diretamente: o usuário cadastra o compromisso uma vez, escolhe com quanta antecedência quer ser avisado, e o sistema verifica periodicamente o que está na janela de envio e registra um aviso, sem nunca duplicá-lo.
+O Sauday ataca o esquecimento diretamente: o usuário cadastra o compromisso uma vez, escolhe com quanta antecedência quer ser avisado, e o sistema confere, no minuto certo, o que está na janela de envio e registra um aviso, sem nunca duplicá-lo.
 
 **Fluxo principal**
-1. O usuário cadastra um compromisso (título, categoria, data, horário, local, observações e antecedência do lembrete).
-2. A API valida e guarda o registro no banco.
-3. A verificação de lembretes roda em dois lugares: no serviço `reminders.py` (a cada 30 segundos) e no próprio site (ao abrir a página e a cada minuto, enquanto ela estiver aberta).
-4. Quando um compromisso entra na janela, o aviso é gravado na **central de avisos**, com o compromisso, a data e o horário. Uma atualização atômica no banco garante um único aviso por lembrete, mesmo com o serviço e o site verificando ao mesmo tempo. Se o compromisso for remarcado, o lembrete é rearmado.
-5. Com a permissão do usuário, o aviso também aparece como **notificação do navegador**, enquanto o Sauday estiver aberto em uma aba.
+1. O usuário cadastra um compromisso: título, categoria, data e horário, local, observações, se quer ser notificado e com quanta antecedência. Só é possível marcar de agora em diante, sempre no **horário de Brasília**.
+2. A API valida e guarda o registro no banco. Datas e horários que já passaram são recusados.
+3. A verificação de lembretes acontece em dois lugares ao mesmo tempo:
+   - no **próprio servidor do site**, que acorda na hora exata de cada lembrete, sem precisar de um segundo terminal;
+   - no **site**, que agenda um despertador para o minuto exato do próximo lembrete e confere o servidor a cada 30 segundos, também com a aba em segundo plano.
+4. Quando um compromisso entra na janela, o aviso é gravado e aparece no **sino** do cabeçalho. Uma atualização atômica no banco garante um único aviso por lembrete, mesmo com várias verificações simultâneas. Se o compromisso for remarcado, o lembrete é rearmado.
+5. Com a permissão do usuário, pedida no momento em que ele liga a notificação, o aviso também aparece como **notificação do navegador**, exibida pelo service worker.
+6. Depois da data, o compromisso vai para o **Histórico**, onde dá para anotar como foi e agendar o retorno.
 
-**O que funciona e o que depende de infraestrutura (Alpha 0.1)**
+**O que funciona e o que depende de infraestrutura (versão 1.0)**
 
 | Mecanismo | Situação |
 |-----------|----------|
 | Registro dos avisos no banco, sem duplicidade | Funcionando |
-| Central de avisos no site, com novos e lidos | Funcionando |
-| Notificação do navegador com a página aberta | Funcionando (exige permissão; em `localhost`/`127.0.0.1` ou HTTPS) |
-| Aviso com o site fechado (Web Push ou e-mail) | Não implementado: exige service worker, servidor de push ou serviço de e-mail |
+| Avisos no sino, com novos e lidos | Funcionando |
+| Notificação do navegador no minuto exato | Funcionando com uma aba do Sauday aberta, mesmo minimizada ou em segundo plano. Exige permissão e `localhost`, `127.0.0.1` ou HTTPS |
+| Lembrete com o navegador fechado | Pelo botão **Calendário**: o compromisso vai para a agenda do celular ou do computador já com alarme. Web Push e e-mail não estão implementados |
 | Acesso de outros aparelhos | Não implementado: o sistema roda localmente e ainda não tem contas de usuário |
 
-**Próximas evoluções:** avisos com o site fechado (e-mail ou push), contas de usuário, integração com agendas digitais e sugestão de estabelecimentos via CNES.
+**Próximas evoluções:** avisos com o navegador fechado (e-mail ou push), contas de usuário, sincronização automática com agendas digitais e sugestão de estabelecimentos via CNES.
 
 **Privacidade:** dados de saúde são sensíveis (LGPD). Nesta fase o banco é local, **não é versionado** (`database/*.db` está no `.gitignore`) e o projeto não usa dados reais de pacientes.
+
+### Versão 1.0: o que mudou a partir da avaliação
+
+| Ponto levantado | O que foi feito |
+|-----------------|-----------------|
+| O site aceitava datas anteriores | Compromissos só podem ser marcados de agora em diante, no horário de Brasília. A regra vale na API e no formulário, com mensagens claras. Os que já passaram ficam guardados num **Histórico de cuidados** |
+| Uma seção inteira só para avisos | A notificação agora é ligada e desligada **em cada compromisso**. Os avisos ficam no sino do cabeçalho |
+| Interface compacta demais | Agenda com saudação e relógio, próximo compromisso em destaque, faixa dos próximos 14 dias e filtros. Formulário, confirmações e avisos abrem em **janelas próprias**. No celular há navegação inferior |
+| Notificação demorava e só aparecia ao recarregar | A página só verificava os lembretes com a aba visível e a cada minuto. Agora o disparo é agendado para o **minuto exato**, a verificação continua em segundo plano, a notificação sai pelo service worker e o servidor gera os avisos sozinho |
+
+Também foram corrigidos: o caminho do banco, que dependia da pasta de execução; o lembrete com antecedência zero, que nunca disparava; antecedências enormes, que travavam a verificação; e horários fora do padrão, que eram aceitos.
 
 ### Tecnologias e justificativas
 
@@ -71,9 +85,11 @@ O Sauday ataca o esquecimento diretamente: o usuário cadastra o compromisso uma
 |--------|------------|---------|
 | Backend / API | Python + Flask | Leve, adequado a uma API REST e dominado pela equipe. Permite entregar rápido no semestre |
 | Banco de dados | SQLite | Sem instalação nem servidor, suficiente para o protótipo. A estrutura permite migrar para um banco servidor depois |
-| Serviço de lembretes | Processo Python separado | Roda independente do servidor web e é simples de testar. O site faz a mesma verificação, e o banco garante que não haja aviso duplicado |
+| Serviço de lembretes | Verificador dentro do próprio servidor (thread) e serviço avulso opcional | Os avisos saem na hora certa sem abrir outro terminal. O site faz a mesma verificação, e o banco garante que não haja aviso duplicado |
 | Interface | HTML, CSS e JavaScript (templates Jinja do Flask) | Sem framework: curva de aprendizado baixa e fácil divisão com a equipe de UI/UX |
-| Notificações | Notification API do navegador | Disponível nos navegadores modernos, sem dependências, respeitando a permissão do usuário |
+| Notificações | Notification API e service worker | Disponíveis nos navegadores modernos, sem dependências. O service worker mostra a notificação com a aba em segundo plano e abre o Sauday no clique |
+| Fuso horário | `zoneinfo` (Python) e `Intl` (navegador), com o pacote `tzdata` | Todos os horários seguem Brasília (`America/Sao_Paulo`), não importa o fuso do servidor ou do aparelho |
+| Calendário | Arquivo iCalendar (`.ics`) | Formato aberto, aceito por Google Agenda, Calendário do iPhone e Outlook, com alarme incluso |
 | Colaboração | Git e GitHub | Histórico, revisão e entrega por repositório público |
 
 ---
@@ -90,7 +106,7 @@ As versões abaixo foram recortadas do arquivo oficial, com fundo transparente, 
 |--------|---------|--------------|
 | Completa (símbolo, nome e slogan) | [`static/img/logo-completa.png`](static/img/logo-completa.png) | Página Sobre e este README |
 | Horizontal (símbolo e nome) | [`static/img/logo-horizontal.png`](static/img/logo-horizontal.png) | Cabeçalho do site, onde o slogan ficaria pequeno demais para ler |
-| Símbolo | [`static/img/simbolo.png`](static/img/simbolo.png) | Indicador de carregamento |
+| Símbolo | [`static/img/simbolo.png`](static/img/simbolo.png) | Indicador de carregamento, rodapé e listas vazias |
 | Favicons | `favicon-32.png`, `favicon-64.png`, `apple-touch-icon.png` | Aba do navegador e atalho no celular |
 
 **Paleta de cores** (extraída da logo oficial)
@@ -122,7 +138,7 @@ Esquecer uma consulta parece pouco, mas, somado, vira vaga ociosa no sistema de 
 
 ## 5. Como executar
 
-Pré-requisito: Python 3.10 ou superior. Execute **sempre a partir da raiz do projeto**, pois o caminho do banco é relativo a ela.
+Pré-requisito: Python 3.10 ou superior. O banco fica sempre em `database/`, de qualquer pasta que você execute.
 
 ```bash
 git clone <url-do-repositorio>
@@ -137,11 +153,14 @@ pip install -r requirements.txt
 python backend/app.py           # servidor em http://127.0.0.1:5000
 ```
 
-Abra http://127.0.0.1:5000. Com a página aberta, o próprio site verifica os lembretes. Para que os avisos sejam gerados mesmo com o navegador fechado, inicie também o serviço de lembretes em um **segundo terminal** (com o ambiente virtual ativo):
+Abra http://127.0.0.1:5000. O servidor já verifica os lembretes sozinho, na hora exata de cada um. Para receber as notificações do navegador, ligue a notificação de um compromisso e permita quando o navegador perguntar.
+
+> Para demonstrar: crie um compromisso para daqui a 6 minutos com aviso de **5 minutos** antes. A notificação aparece no minuto seguinte, sem recarregar a página. Com uma antecedência maior que o tempo restante, ela aparece assim que você salva.
+
+O serviço avulso de lembretes continua disponível, para gerar os avisos sem o site no ar:
 
 ```bash
-python backend/reminders.py                 # verifica a cada 30 s
-python backend/reminders.py --intervalo 5   # para demonstrações
+python backend/reminders.py
 ```
 
 > No Windows, se o PowerShell bloquear a ativação do ambiente virtual, rode `Set-ExecutionPolicy -Scope Process Bypass` e ative de novo com `.\.venv\Scripts\Activate.ps1`.
@@ -157,8 +176,11 @@ python -m unittest discover -s backend -p "test_*.py" -v
 | Método | Rota | Função |
 |--------|------|--------|
 | GET | `/api/appointments` | Lista os compromissos |
-| POST | `/api/appointments` | Cria um compromisso |
+| POST | `/api/appointments` | Cria um compromisso (data e horário de agora em diante, em Brasília) |
 | GET / PUT / DELETE | `/api/appointments/<id>` | Consulta, atualiza ou exclui |
+| PATCH | `/api/appointments/<id>` | Altera só os campos enviados. Ex.: `{"notify": false}` desliga a notificação |
+| GET | `/api/appointments/<id>/calendar.ics` | Arquivo de calendário com o compromisso e o alarme |
+| GET | `/api/status` | Versão e hora oficial do servidor (Brasília) |
 | GET | `/api/reminders` | Lembretes na janela de envio que ainda não geraram aviso |
 | POST | `/api/reminders/process` | Verifica os lembretes e registra os avisos (usado pelo site) |
 | GET | `/api/notifications` | Lista os avisos e a quantidade de não lidos |
@@ -172,13 +194,18 @@ python -m unittest discover -s backend -p "test_*.py" -v
 ```
 sauday/
 ├── backend/
-│   ├── app.py              # API Flask e páginas
+│   ├── app.py              # API Flask, páginas e validações
 │   ├── database.py         # acesso ao SQLite (compromissos e avisos)
-│   ├── reminders.py        # regra e serviço automático de lembretes
-│   ├── test_reminders.py   # testes de lembretes e avisos
+│   ├── reminders.py        # regra, verificador embutido e serviço avulso de lembretes
+│   ├── tempo.py            # horário de Brasília
+│   ├── calendario.py       # exportação para calendário (.ics)
+│   ├── test_reminders.py   # testes de lembretes, avisos e fuso
 │   ├── test_api.py         # testes das rotas da API e das páginas
-│   └── templates/          # base, início, sobre e 404
-├── static/                 # css/, js/ e img/ (logo oficial e favicons)
+│   └── templates/          # agenda, histórico, sobre, 404 e as janelas compartilhadas
+├── static/
+│   ├── css/                # estilos
+│   ├── js/                 # nucleo.js (todas as páginas), agenda.js, historico.js e sw.js
+│   └── img/                # logo oficial e favicons
 ├── database/               # banco local (não versionado)
 ├── docs/                   # requisitos, diagramas e decisões técnicas
 ├── requirements.txt
@@ -199,5 +226,6 @@ sauday/
 
 - [x] **Checkpoint 1:** problema, solução, identidade visual, pitch, API e interface iniciais
 - [x] **Alpha 0.1:** logo oficial aplicada, página Sobre, edição de compromissos, central de avisos, notificações do navegador e estados de carregamento
+- [x] **Versão 1.0:** histórico de cuidados, notificação por compromisso, datas só de agora em diante no horário de Brasília, notificações no minuto exato, nova interface com janelas e exportação para calendário
 - [ ] **Checkpoint 2:** protótipo com fluxo principal navegável, README com prints e vídeo de demonstração
 - [ ] **Apresentação final:** pitch de 5 minutos, projeto funcionando e repositório completo

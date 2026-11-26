@@ -9,7 +9,7 @@ from database import (
     listar_agendamentos,
     registrar_lembrete
 )
-from tempo import FORMATO_REGISTRO, agora_brasilia
+from tempo import FORMATO_REGISTRO, agora_brasilia, configurar_log
 
 logger = logging.getLogger("healthreminder.reminders")
 
@@ -265,10 +265,7 @@ if __name__ == "__main__":
     )
     argumentos = parser.parse_args()
 
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s | %(levelname)s | %(message)s"
-    )
+    configurar_log()
 
     criar_tabela()
     executar_servico(argumentos.intervalo)

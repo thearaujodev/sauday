@@ -131,7 +131,7 @@
     if (c.notes) corpo.append(S.linha("nota", c.notes, "cartao-notas"));
 
     const st = S.statusDoLembrete(c);
-    const status = S.linha(st.icone, st.texto, `lembrete-status ${st.classe}`);
+    corpo.append(S.linha(st.icone, st.texto, `lembrete-status ${st.classe}`));
 
     const acoes = criar("div", "cartao-acoes");
     acoes.append(
@@ -158,7 +158,7 @@
     );
 
     const rodape = criar("div", "cartao-rodape");
-    rodape.append(status, acoes);
+    rodape.append(acoes);
 
     item.append(S.blocoData(c.date, { ano: outroAno }), corpo, rodape);
     return item;

@@ -254,7 +254,7 @@
     const falta = criar("span", `contagem${minutosParaComecar <= 120 ? " urgente" : ""}`, tempo.faltaPara(c.date, c.time));
     falta.dataset.ateData = c.date;
     falta.dataset.ateHora = c.time;
-    quando.append(falta);
+    quando.lastElementChild.append(" ", falta); // dentro do texto: quebra de linha natural
 
     const corpo = criar("div", "cartao-corpo");
     corpo.append(cabecalho, quando);
@@ -275,13 +275,13 @@
     alternar.append(trilho, criar("span", "alternar-texto", "Notificar"));
     alternar.addEventListener("click", () => S.alternarNotificacao(c, !c.notify));
 
-    const status = criar("p", `lembrete-status ${st.classe}`);
+    // O status do aviso fica no corpo; o rodapé guarda só o interruptor e as ações.
+    const status = criar("p", `cartao-linha lembrete-status ${st.classe}`);
     status.id = `status-${c.id}`;
-    status.append(icone(st.icone), criar("span", null, st.texto));
-    if (st.antecedencia) status.append(criar("span", "lembrete-antecedencia", ` · ${st.antecedencia}`));
-
-    const lembrete = criar("div", "cartao-lembrete");
-    lembrete.append(alternar, status);
+    const statusTexto = criar("span", null, st.texto);
+    if (st.antecedencia) statusTexto.append(criar("span", "lembrete-antecedencia", ` · ${st.antecedencia}`));
+    status.append(icone(st.icone), statusTexto);
+    corpo.append(status);
 
     const calendario = criar("a", "btn-texto btn-pequeno");
     calendario.href = S.urlCalendario(c);
@@ -311,7 +311,7 @@
     );
 
     const rodape = criar("div", "cartao-rodape");
-    rodape.append(lembrete, acoes);
+    rodape.append(alternar, acoes);
 
     item.append(S.blocoData(c.date), corpo, rodape);
     return item;

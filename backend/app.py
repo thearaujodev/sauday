@@ -1,4 +1,3 @@
-import logging
 import mimetypes
 import os
 import re
@@ -32,7 +31,7 @@ from reminders import (
     listar_lembretes_pendentes,
     processar_lembretes
 )
-from tempo import FORMATO_REGISTRO, FUSO_BRASILIA, NOME_FUSO, agora_brasilia
+from tempo import FORMATO_REGISTRO, FUSO_BRASILIA, NOME_FUSO, agora_brasilia, configurar_log
 
 # Alguns Windows registram arquivos .js como text/plain, e o navegador se
 # recusa a instalar um service worker servido assim. Isto garante o tipo certo.
@@ -425,10 +424,7 @@ def ler_todas_notifications():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s | %(levelname)s | %(message)s"
-    )
+    configurar_log()
 
     modo_debug = os.environ.get("SAUDAY_DEBUG", "1") != "0"
 
